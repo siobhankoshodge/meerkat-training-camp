@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dribble Maze - Meerkat Training Camp</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Mobile D-pad controls */
+        .mobile-controls {
+            display: none;
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+        }
+
+        .dpad {
+            display: grid;
+            grid-template-areas:
+                ". up ."
+                "left . right"
+                ". down .";
+            grid-template-columns: 60px 60px 60px;
+            grid-template-rows: 60px 60px 60px;
+            gap: 4px;
+        }
+
+        .dpad-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            border: 3px solid var(--meerkat-green);
+            background: rgba(26, 26, 26, 0.85);
+            color: var(--meerkat-green);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        .dpad-btn:active {
+            background: var(--meerkat-green);
+            color: var(--meerkat-black);
+        }
+
+        .dpad-up { grid-area: up; }
+        .dpad-down { grid-area: down; }
+        .dpad-left { grid-area: left; }
+        .dpad-right { grid-area: right; }
+
+        @media (max-width: 768px), (pointer: coarse) {
+            .mobile-controls { display: block; }
+        }
+    </style>
+</head>
+<body class="game-page">
+    <div class="game-header">
+        <a href="index.html" class="back-btn" style="margin:0; padding:6px 15px; font-size:0.9rem;">🏠 Menu</a>
+        <h1>🏃‍♀️ Dribble Maze</h1>
+        <div class="score-display">
+            <span id="timer-display">Time: 0.0s</span>
+            <span id="penalty-display" style="margin-left:10px; color:#e74c3c;"></span>
+        </div>
+    </div>
+
+    <div class="instructions" id="instructions">
+        Use arrow keys (or D-pad on mobile) to dribble to the goal! Avoid the cones! 🔶
+    </div>
+
+    <div class="game-area">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <!-- Mobile D-pad -->
+    <div class="mobile-controls" id="mobile-controls">
+        <div class="dpad">
+            <div class="dpad-btn dpad-up" data-dir="up">▲</div>
+            <div class="dpad-btn dpad-left" data-dir="left">◄</div>
+            <div class="dpad-btn dpad-right" data-dir="right">►</div>
+            <div class="dpad-btn dpad-down" data-dir="down">▼</div>
+        </div>
+    </div>
+
+    <!-- Start Overlay -->
+    <div class="overlay" id="start-overlay">
+        <div class="overlay-content">
+            <h2>🏃‍♀️ Dribble Maze</h2>
+            <p style="margin:15px 0;">Dribble through the cones to reach the goal!<br>Hitting a cone adds <b>+2 seconds</b> penalty.</p>
+            <p style="color:#888;font-size:0.85rem;">Use arrow keys or on-screen D-pad</p>
+            <div style="margin:10px 0;">
+                <label style="font-size:0.9rem;">Level: </label>
+                <select id="level-select" style="font-family:Fredoka;font-size:1rem;padding:5px 10px;border-radius:8px;border:2px solid var(--meerkat-green);">
+                    <option value="1">1 - Easy</option>
+                    <option value="2">2 - Medium</option>
+                    <option value="3">3 - Hard</option>
+                </select>
+            </div>
+            <div id="best-time-start" style="color:#888;margin:10px 0;"></div>
+            <button class="btn btn-primary" id="start-btn">Play! ⚽</button>
+        </div>
+    </div>
+
+    <!-- Level Complete Overlay -->
+    <div class="overlay" id="complete-overlay" style="display:none;">
+        <div class="overlay-content">
+            <h2>⚽ GOAL!</h2>
+            <div class="final-score" id="final-time">0.0s</div>
+            <div id="penalty-summary" style="color:#888;margin:5px 0;"></div>
+            <div class="high-score-msg" id="high-score-msg" style="display:none;">🌟 NEW BEST TIME! 🌟</div>
+            <div id="best-time" style="color:#888;margin:10px 0;"></div>
+            <button class="btn btn-primary" id="retry-btn">Try Again! 🔄</button>
+            <button class="btn btn-primary" id="next-btn" style="display:none;">Next Level ➡️</button>
+            <a href="index.html" class="btn btn-secondary">Menu 🏠</a>
+        </div>
+    </div>
+
+    <div class="sponsor-bar">
+        <span>Proudly sponsored by</span> <span class="sponsor-name">☕ Esquires Coffee</span>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="game2-dribble.js"></script>
+</body>
+</html>

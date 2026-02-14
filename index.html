@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meerkat Training Camp</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="striped-header">
+        <h1>MEERKAT TRAINING CAMP</h1>
+        <div class="subtitle">Under-8s Girls Football</div>
+    </div>
+
+    <div class="mascot" title="Go Meerkats!">🦡⚽</div>
+
+    <div class="games-container">
+        <a href="game1-shooting.html" class="game-card">
+            <div class="icon">🎯</div>
+            <h2>Shooting Practice</h2>
+            <p>Aim for the targets and score goals!</p>
+            <div class="stars" id="stars-shooting"></div>
+        </a>
+
+        <a href="game2-dribble.html" class="game-card">
+            <div class="icon">🏃‍♀️</div>
+            <h2>Dribble Maze</h2>
+            <p>Dribble through the cones as fast as you can!</p>
+            <div class="stars" id="stars-dribble"></div>
+        </a>
+
+        <a href="game3-keepieups.html" class="game-card">
+            <div class="icon">🦶</div>
+            <h2>Keepie-Uppies</h2>
+            <p>Keep the ball in the air — don't let it drop!</p>
+            <div class="stars" id="stars-keepieups"></div>
+        </a>
+
+        <a href="game4-goalkeeper.html" class="game-card">
+            <div class="icon">🧤</div>
+            <h2>Goalkeeper</h2>
+            <p>Dive to save the shots — how many can you stop?</p>
+            <div class="stars" id="stars-goalkeeper"></div>
+        </a>
+
+        <a href="game5-tackle.html" class="game-card">
+            <div class="icon">💪</div>
+            <h2>Tackle Time</h2>
+            <p>Time your tackle to stop the attackers!</p>
+            <div class="stars" id="stars-tackle"></div>
+        </a>
+    </div>
+
+    <div class="sponsor-bar">
+        <span>Proudly sponsored by</span> <span class="sponsor-name">☕ Esquires Coffee</span>
+    </div>
+
+    <script src="shared.js"></script>
+    <script>
+        // Display star ratings on menu based on saved high scores
+        function displayStars(elementId, gameKey, thresholds) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            const score = MeerkatScores.getHighScore(gameKey);
+            let earned = 0;
+            if (score >= thresholds[0]) earned = 1;
+            if (score >= thresholds[1]) earned = 2;
+            if (score >= thresholds[2]) earned = 3;
+
+            let html = '';
+            for (let i = 0; i < 3; i++) {
+                html += i < earned
+                    ? '<span class="earned">&#9733;</span>'
+                    : '<span class="empty">&#9733;</span>';
+            }
+            if (score > 0) {
+                html += `<br><small style="font-size:0.7rem;color:#888;">Best: ${score}</small>`;
+            }
+            el.innerHTML = html;
+        }
+
+        // Star thresholds: [1 star, 2 stars, 3 stars]
+        displayStars('stars-shooting', 'shooting', [30, 60, 90]);
+        displayStars('stars-dribble', 'dribble', [1, 1, 1]); // time-based, updated later
+        displayStars('stars-keepieups', 'keepieups', [5, 15, 30]);
+        displayStars('stars-goalkeeper', 'goalkeeper', [3, 6, 9]);
+        displayStars('stars-tackle', 'tackle', [3, 6, 9]);
+    </script>
+</body>
+</html>

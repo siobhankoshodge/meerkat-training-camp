@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tackle Time - Meerkat Training Camp</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .tackle-bar-container {
+            background: rgba(26,26,26,0.85);
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .tackle-bar {
+            position: relative;
+            width: 90%;
+            max-width: 400px;
+            height: 30px;
+            background: #333;
+            border-radius: 15px;
+            border: 3px solid var(--meerkat-green);
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .tackle-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #f5c542, #2ecc40);
+            border-radius: 12px;
+            transition: width 0.1s;
+        }
+        .tackle-zone {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            border-left: 3px solid #fff;
+            border-right: 3px solid #fff;
+            background: rgba(46, 204, 64, 0.25);
+            pointer-events: none;
+        }
+        .tackle-marker {
+            position: absolute;
+            top: -4px;
+            width: 6px;
+            height: 38px;
+            background: #fff;
+            border-radius: 3px;
+            transition: left 0.05s;
+            pointer-events: none;
+        }
+        .tackle-bar-label {
+            color: #aaa;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        .tackle-btn-wrap {
+            padding: 10px;
+            background: rgba(26,26,26,0.7);
+            text-align: center;
+        }
+        .tackle-btn {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            padding: 18px 50px;
+            border-radius: 16px;
+            border: 4px solid var(--meerkat-green);
+            background: var(--meerkat-green);
+            color: var(--meerkat-black);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .tackle-btn:hover {
+            background: var(--meerkat-dark-green);
+            color: #fff;
+        }
+        .tackle-btn:active {
+            transform: scale(0.92);
+        }
+        .tackle-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .wave-tracker {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px;
+            background: rgba(26,26,26,0.5);
+        }
+        .wave-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #555;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+        }
+        .wave-dot.won { background: var(--meerkat-green); border-color: var(--meerkat-dark-green); }
+        .wave-dot.lost { background: #e74c3c; border-color: #c0392b; }
+        .wave-dot.current { border-color: var(--meerkat-gold); border-width: 3px; }
+    </style>
+</head>
+<body class="game-page">
+    <div class="game-header">
+        <a href="index.html" class="back-btn" style="margin:0; padding:6px 15px; font-size:0.9rem;">🏠 Menu</a>
+        <h1>💪 Tackle Time</h1>
+        <div class="score-display" id="score-display">Tackles: 0 / 0</div>
+    </div>
+
+    <div class="wave-tracker" id="wave-tracker"></div>
+
+    <div class="game-area">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <div class="tackle-bar-container" id="tackle-bar-container" style="display:none;">
+        <div class="tackle-bar">
+            <div class="tackle-zone" id="tackle-zone"></div>
+            <div class="tackle-marker" id="tackle-marker"></div>
+        </div>
+        <div class="tackle-bar-label">Time your tackle in the GREEN zone!</div>
+    </div>
+
+    <div class="tackle-btn-wrap" id="tackle-btn-wrap" style="display:none;">
+        <button class="tackle-btn" id="tackle-btn">TACKLE! 💪</button>
+    </div>
+
+    <!-- Start Overlay -->
+    <div class="overlay" id="start-overlay">
+        <div class="overlay-content">
+            <h2>💪 Tackle Time</h2>
+            <p style="margin:15px 0;">Opponents are dribbling towards your goal!<br>Time your tackle perfectly to win the ball.</p>
+            <p style="color:#888;font-size:0.85rem;">Watch the timing bar and press <b>TACKLE</b><br>when the marker is in the green zone!</p>
+            <div id="high-score-start" style="color:#888;margin:10px 0;"></div>
+            <button class="btn btn-primary" id="start-btn">Play! 💪</button>
+        </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div class="overlay" id="gameover-overlay" style="display:none;">
+        <div class="overlay-content">
+            <h2 id="result-title">Full Time!</h2>
+            <div class="final-score" id="final-score">0 / 10</div>
+            <div>tackles won</div>
+            <div class="high-score-msg" id="high-score-msg" style="display:none;">🌟 NEW HIGH SCORE! 🌟</div>
+            <div id="best-score" style="color:#888;margin:10px 0;"></div>
+            <button class="btn btn-primary" id="retry-btn">Try Again! 🔄</button>
+            <a href="index.html" class="btn btn-secondary">Menu 🏠</a>
+        </div>
+    </div>
+
+    <div class="sponsor-bar">
+        <span>Proudly sponsored by</span> <span class="sponsor-name">☕ Esquires Coffee</span>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="game5-tackle.js"></script>
+</body>
+</html>

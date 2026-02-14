@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goalkeeper - Meerkat Training Camp</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .dive-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(26,26,26,0.85);
+        }
+        .dive-btn {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 15px 28px;
+            border-radius: 14px;
+            border: 3px solid var(--meerkat-green);
+            background: var(--meerkat-black);
+            color: var(--meerkat-green);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .dive-btn:hover {
+            background: var(--meerkat-green);
+            color: var(--meerkat-black);
+        }
+        .dive-btn:active {
+            transform: scale(0.93);
+        }
+
+        /* Round tracker */
+        .round-tracker {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(26,26,26,0.6);
+        }
+        .round-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #555;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+        .round-dot.saved { background: var(--meerkat-green); border-color: var(--meerkat-dark-green); }
+        .round-dot.missed { background: #e74c3c; border-color: #c0392b; }
+        .round-dot.current { border-color: var(--meerkat-gold); border-width: 3px; }
+    </style>
+</head>
+<body class="game-page">
+    <div class="game-header">
+        <a href="index.html" class="back-btn" style="margin:0; padding:6px 15px; font-size:0.9rem;">🏠 Menu</a>
+        <h1>🧤 Goalkeeper</h1>
+        <div class="score-display" id="score-display">Saves: 0 / 0</div>
+    </div>
+
+    <div class="round-tracker" id="round-tracker"></div>
+
+    <div class="game-area">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <div class="dive-buttons" id="dive-buttons" style="display:none;">
+        <button class="dive-btn" data-dir="left">⬅️ Left</button>
+        <button class="dive-btn" data-dir="centre">⬆️ Centre</button>
+        <button class="dive-btn" data-dir="right">➡️ Right</button>
+    </div>
+
+    <!-- Start Overlay -->
+    <div class="overlay" id="start-overlay">
+        <div class="overlay-content">
+            <h2>🧤 Goalkeeper</h2>
+            <p style="margin:15px 0;">Watch where the striker aims, then dive to save the shot!<br>You face <b>10 shots</b>. How many can you save?</p>
+            <p style="color:#888;font-size:0.85rem;">Click/tap a direction or use arrow keys<br>← Left &nbsp; ↑ Centre &nbsp; → Right</p>
+            <div id="high-score-start" style="color:#888;margin:10px 0;"></div>
+            <button class="btn btn-primary" id="start-btn">Play! 🧤</button>
+        </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div class="overlay" id="gameover-overlay" style="display:none;">
+        <div class="overlay-content">
+            <h2 id="result-title">Full Time!</h2>
+            <div class="final-score" id="final-score">0 / 10</div>
+            <div>saves</div>
+            <div class="high-score-msg" id="high-score-msg" style="display:none;">🌟 NEW HIGH SCORE! 🌟</div>
+            <div id="best-score" style="color:#888;margin:10px 0;"></div>
+            <button class="btn btn-primary" id="retry-btn">Try Again! 🔄</button>
+            <a href="index.html" class="btn btn-secondary">Menu 🏠</a>
+        </div>
+    </div>
+
+    <div class="sponsor-bar">
+        <span>Proudly sponsored by</span> <span class="sponsor-name">☕ Esquires Coffee</span>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="game4-goalkeeper.js"></script>
+</body>
+</html>

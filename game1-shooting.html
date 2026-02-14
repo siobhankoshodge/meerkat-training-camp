@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shooting Practice - Meerkat Training Camp</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="game-page">
+    <div class="game-header">
+        <a href="index.html" class="back-btn" style="margin:0; padding:6px 15px; font-size:0.9rem;">🏠 Menu</a>
+        <h1>🎯 Shooting Practice</h1>
+        <div class="score-display">
+            <span id="score-display">Score: 0</span>
+            <span id="shots-display" style="margin-left:15px;">Shots: 10</span>
+        </div>
+    </div>
+
+    <div class="instructions" id="instructions">
+        Click or tap where you want to shoot the ball! Hit the targets for points! 🎯
+    </div>
+
+    <div class="game-area">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <!-- Start Overlay -->
+    <div class="overlay" id="start-overlay">
+        <div class="overlay-content">
+            <h2>🎯 Shooting Practice</h2>
+            <p style="margin:15px 0;">Click or tap to shoot at the targets in the goal!<br>You get <b>10 shots</b> — aim carefully!</p>
+            <p style="color:#888;font-size:0.85rem;">🟡 = 10pts &nbsp; 🟠 = 20pts &nbsp; 🔴 = 30pts</p>
+            <div id="high-score-start" style="color:#888;margin:10px 0;"></div>
+            <button class="btn btn-primary" id="start-btn">Play! ⚽</button>
+        </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div class="overlay" id="gameover-overlay" style="display:none;">
+        <div class="overlay-content">
+            <h2>Full Time!</h2>
+            <div class="final-score" id="final-score">0</div>
+            <div>points</div>
+            <div class="high-score-msg" id="high-score-msg" style="display:none;">🌟 NEW HIGH SCORE! 🌟</div>
+            <div id="best-score" style="color:#888;margin:10px 0;"></div>
+            <button class="btn btn-primary" id="retry-btn">Try Again! 🔄</button>
+            <a href="index.html" class="btn btn-secondary">Menu 🏠</a>
+        </div>
+    </div>
+
+    <div class="sponsor-bar">
+        <span>Proudly sponsored by</span> <span class="sponsor-name">☕ Esquires Coffee</span>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="game1-shooting.js"></script>
+</body>
+</html>
