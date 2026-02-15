@@ -40,10 +40,10 @@ const GRID_SLOTS = [
     { x: 0.5, y: 0.82, name: 'Goalkeeper' }
 ];
 
-// Meerkat player names
+// Meerkat player names (the real Meerkats!)
 const PLAYER_NAMES = [
-    'Mia', 'Ella', 'Rosie', 'Lily', 'Poppy',
-    'Grace', 'Sophie', 'Isla', 'Freya', 'Daisy'
+    'Saoirse', 'Alessia', 'Clara', 'Orla', 'Elspeth',
+    'Olivia', 'Chloe', 'Becky', 'Vivienne', 'Helena'
 ];
 
 // ===== Andy's Rambling Dialogues + Interrupts =====
@@ -148,45 +148,11 @@ function getAndyDialogue(category) {
     return options[Math.floor(Math.random() * options.length)];
 }
 
-// ===== Custom Coach Andy Dialogue with Interrupt =====
+// ===== Custom Coach Andy Dialogue with OK Button =====
 
-function showAndyRamble(category, callback) {
-    const dialogue = getAndyDialogue(category);
-
-    // First show Andy rambling
-    CoachDialogue._ensureElement();
-    if (CoachDialogue._timeout) clearTimeout(CoachDialogue._timeout);
-
-    document.getElementById('coach-avatar').textContent = '🧔';
-    document.getElementById('coach-name').textContent = 'Coach Andy:';
-    document.getElementById('coach-message').textContent = dialogue.andy;
-    CoachDialogue._element.style.display = 'block';
-
-    // After a moment, the Meerkats interrupt!
-    const rambleDuration = Math.min(4000, dialogue.andy.length * 25);
-
-    CoachDialogue._timeout = setTimeout(() => {
-        // Shake the dialogue box
-        CoachDialogue._element.style.animation = 'none';
-        void CoachDialogue._element.offsetHeight; // trigger reflow
-        CoachDialogue._element.style.animation = 'shake 0.4s ease';
-
-        document.getElementById('coach-avatar').textContent = '🦡';
-        document.getElementById('coach-name').textContent = dialogue.interrupter + ':';
-        document.getElementById('coach-name').style.color = '#f5c542';
-        document.getElementById('coach-message').textContent = dialogue.interrupt;
-
-        CoachDialogue._timeout = setTimeout(() => {
-            document.getElementById('coach-name').style.color = '#2ecc40';
-            CoachDialogue.hide();
-            if (callback) callback();
-        }, 2500);
-    }, rambleDuration);
-}
-
-// Add shake animation
-const shakeStyle = document.createElement('style');
-shakeStyle.textContent = `
+// Add shake animation + OK button styles
+const extraStyles = document.createElement('style');
+extraStyles.textContent = `
     @keyframes shake {
         0%, 100% { transform: translateX(0); }
         20% { transform: translateX(-8px); }
@@ -194,8 +160,126 @@ shakeStyle.textContent = `
         60% { transform: translateX(-5px); }
         80% { transform: translateX(5px); }
     }
+    #coach-ok-btn {
+        background: #2ecc40;
+        color: #1a1a1a;
+        border: 2px solid #1a9c2d;
+        border-radius: 8px;
+        padding: 6px 20px;
+        font-family: 'Fredoka', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        margin-left: 10px;
+        flex-shrink: 0;
+        transition: all 0.15s ease;
+    }
+    #coach-ok-btn:hover {
+        background: #1a9c2d;
+        color: #fff;
+    }
+    #coach-ok-btn:active {
+        transform: scale(0.93);
+    }
 `;
-document.head.appendChild(shakeStyle);
+document.head.appendChild(extraStyles);
+
+// We need to block the default click-to-close on the coach dialogue
+// during our OK button sequences
+let _blockCoachClose = false;
+
+function patchCoachDialogue() {
+    CoachDialogue._ensureElement();
+    // Only patch once
+    if (CoachDialogue._patched) return;
+    CoachDialogue._patched = true;
+
+    // Replace the click listener with one that respects our block flag
+    const el = CoachDialogue._element;
+    // Remove old listener by cloning the node (removes all listeners)
+    const newEl = el.cloneNode(true);
+    el.parentNode.replaceChild(newEl, el);
+    CoachDialogue._element = newEl;
+
+    newEl.addEventListener('click', (e) => {
+        if (_blockCoachClose) {
+            e.stopPropagation();
+            return; // blocked — must use OK button
+        }
+        CoachDialogue.hide();
+    });
+}
+
+function getOkButtonParent() {
+    // Find the "tap to close" div inside the coach dialogue
+    const el = CoachDialogue._element;
+    // It's the last div inside the flex container
+    const flexContainer = el.querySelector('div[style*="display:flex"]');
+    if (flexContainer) {
+        const children = flexContainer.children;
+        return children[children.length - 1]; // the "tap to close" div
+    }
+    return null;
+}
+
+function showAndyRamble(category, callback) {
+    const dialogue = getAndyDialogue(category);
+
+    patchCoachDialogue();
+    _blockCoachClose = true;
+
+    if (CoachDialogue._timeout) clearTimeout(CoachDialogue._timeout);
+
+    // Show Andy rambling
+    document.getElementById('coach-avatar').textContent = '🧔';
+    document.getElementById('coach-name').textContent = 'Coach Andy:';
+    document.getElementById('coach-name').style.color = '#2ecc40';
+    document.getElementById('coach-message').textContent = dialogue.andy;
+    CoachDialogue._element.style.display = 'block';
+    CoachDialogue._element.style.cursor = 'default';
+
+    // Replace "tap to close" with an OK button
+    const btnParent = getOkButtonParent();
+    if (btnParent) {
+        btnParent.innerHTML = '<button id="coach-ok-btn">OK 👍</button>';
+    }
+
+    // When OK is clicked on Andy's ramble → Meerkats interrupt!
+    const okBtn = document.getElementById('coach-ok-btn');
+    if (okBtn) {
+        okBtn.onclick = function (e) {
+            e.stopPropagation();
+
+            // Shake the dialogue box
+            CoachDialogue._element.style.animation = 'none';
+            void CoachDialogue._element.offsetHeight;
+            CoachDialogue._element.style.animation = 'shake 0.4s ease';
+
+            document.getElementById('coach-avatar').textContent = '🦡';
+            document.getElementById('coach-name').textContent = dialogue.interrupter + ':';
+            document.getElementById('coach-name').style.color = '#f5c542';
+            document.getElementById('coach-message').textContent = dialogue.interrupt;
+
+            // New OK button for the interrupt
+            const btnParent2 = getOkButtonParent();
+            if (btnParent2) {
+                btnParent2.innerHTML = '<button id="coach-ok-btn">OK 😂</button>';
+            }
+
+            const okBtn2 = document.getElementById('coach-ok-btn');
+            if (okBtn2) {
+                okBtn2.onclick = function (e2) {
+                    e2.stopPropagation();
+                    document.getElementById('coach-name').style.color = '#2ecc40';
+                    CoachDialogue._element.style.cursor = 'pointer';
+                    _blockCoachClose = false;
+                    CoachDialogue.hide();
+                    if (callback) callback();
+                };
+            }
+        };
+    }
+}
 
 // ===== Game State =====
 let gameRunning = false;
@@ -555,34 +639,61 @@ function startShowPhase() {
     phase = 'showing';
     draw();
 
-    const showDuration = Math.max(2500, SHOW_TIME - currentRound * 200);
-
-    // Show Andy rambling then transition
+    // Show Andy rambling then show formation with a "Ready!" button
     if (currentRound === 0) {
         showAndyRamble('start', () => {
-            startTimer(showDuration);
-            animateShow(showDuration);
+            showFormationWithReadyButton();
         });
     } else {
         showAndyRamble('showFormation', () => {
-            startTimer(showDuration);
-            animateShow(showDuration);
+            showFormationWithReadyButton();
         });
     }
 }
 
-function animateShow(duration) {
-    const start = Date.now();
-    function tick() {
+function showFormationWithReadyButton() {
+    // Formation is visible on the pitch — let the player study it
+    phase = 'showing';
+    draw();
+
+    patchCoachDialogue();
+    _blockCoachClose = true;
+
+    if (CoachDialogue._timeout) clearTimeout(CoachDialogue._timeout);
+
+    document.getElementById('coach-avatar').textContent = '👀';
+    document.getElementById('coach-name').textContent = 'Memorise!';
+    document.getElementById('coach-name').style.color = '#f5c542';
+    document.getElementById('coach-message').textContent = 'Study the formation... press Ready when you\'ve got it!';
+    CoachDialogue._element.style.display = 'block';
+    CoachDialogue._element.style.cursor = 'default';
+
+    const btnParent = getOkButtonParent();
+    if (btnParent) {
+        btnParent.innerHTML = '<button id="coach-ok-btn">Ready! 🧠</button>';
+    }
+
+    // Animate the formation ghosts while waiting
+    let showAnim;
+    function animateWhileStudying() {
         if (phase !== 'showing') return;
         draw();
-        if (Date.now() - start < duration) {
-            requestAnimationFrame(tick);
-        } else {
-            startPlacePhase();
-        }
+        showAnim = requestAnimationFrame(animateWhileStudying);
     }
-    tick();
+    animateWhileStudying();
+
+    const readyBtn = document.getElementById('coach-ok-btn');
+    if (readyBtn) {
+        readyBtn.onclick = function (e) {
+            e.stopPropagation();
+            if (showAnim) cancelAnimationFrame(showAnim);
+            document.getElementById('coach-name').style.color = '#2ecc40';
+            CoachDialogue._element.style.cursor = 'pointer';
+            _blockCoachClose = false;
+            CoachDialogue.hide();
+            startPlacePhase();
+        };
+    }
 }
 
 function startPlacePhase() {
@@ -623,7 +734,7 @@ function checkRound() {
 
     draw();
 
-    // Show Andy's reaction with interrupt
+    // Show Andy's reaction with interrupt — after a short pause to see results
     const pct = correct / numPlayers;
     let category;
     if (pct === 1) category = 'correct';
@@ -636,13 +747,11 @@ function checkRound() {
             if (currentRound >= TOTAL_ROUNDS) {
                 gameOver();
             } else {
-                setTimeout(() => {
-                    setupRound();
-                    startShowPhase();
-                }, 500);
+                setupRound();
+                startShowPhase();
             }
         });
-    }, 1200);
+    }, 1500);
 }
 
 // ===== Drag & Drop =====
